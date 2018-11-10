@@ -1,7 +1,7 @@
 # coding=utf-8
 import time
-from pyECCArithmetic.curve import Curve
-from pyECCArithmetic.error import PointsOnDifferentCurveError
+from PyECCArithmetic.curve import Curve
+from PyECCArithmetic.error import PointsOnDifferentCurveError
 
 
 def _mul_inv(a, b):

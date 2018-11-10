@@ -1,7 +1,7 @@
 # coding=utf-8
 
 import unittest
-from pyECCArithmetic import *
+from PyECCArithmetic import *
 
 
 class TestECC_SmallCurve(unittest.TestCase):

@@ -6,14 +6,14 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(
-    name="pyECCArithmetic",
+    name="PyECCArithmetic",
     version="1.0.0",
     author="Philipp Nieting",
-    author_email='secret',
+    auther_email="developer@nieting.de",
     description="Basic arithmetic operations for points on elliptic curves.",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/Kavakuo/pyECCArithmetic",
+    url="https://github.com/Kavakuo/PyECCArithmetic",
     packages=setuptools.find_packages('src',exclude=['tests']),
     python_requires='>=3.0',
     classifiers=[
