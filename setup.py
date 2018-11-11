@@ -9,7 +9,7 @@ setuptools.setup(
     name="PyECCArithmetic",
     version="1.0.0",
     author="Philipp Nieting",
-    auther_email="developer@nieting.de",
+    author_email="developer@nieting.de",
     description="Basic arithmetic operations for points on elliptic curves.",
     long_description=long_description,
     long_description_content_type="text/markdown",
