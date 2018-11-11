@@ -165,6 +165,12 @@ class Point(object):
         :return: new_point = self * scalar
         :rtype: Point
         """
+
+        # lossless conversion to int possible?
+        temp_scalar = int(scalar)
+        if temp_scalar == scalar:
+            scalar = temp_scalar
+
         if not isinstance(scalar, int):
             raise ValueError('Point multiplication is only supported with a scalar of type int.')
         
