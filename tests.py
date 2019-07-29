@@ -7,8 +7,8 @@ from PyECCArithmetic import *
 class TestECC_SmallCurve(unittest.TestCase):
 
     def setUp(self):
-        x_coords = [5, 6, 10, 3, 9, 16, 0, 13, 7, 7, 13, 0, 16, 9, 3, 10, 6, 5]
-        y_coords = [1, 3, 6, 1, 16, 13, 6, 7, 6, 11, 10, 11, 4, 1, 16, 11, 14, 16]
+        x_coords = [5, 6, 10, 3,  9, 16, 0, 13, 7,  7, 13,  0, 16, 9,  3, 10,  6,  5]
+        y_coords = [1, 3,  6, 1, 16, 13, 6,  7, 6, 11, 10, 11,  4, 1, 16, 11, 14, 16]
         self.curve = Curve(2, 2, 17, "test")
         self.results = [Point(x, y, self.curve) for x, y in zip(x_coords, y_coords)]
         self.pointOrder = 19
@@ -21,6 +21,21 @@ class TestECC_SmallCurve(unittest.TestCase):
         for i in range(1, len(self.results)):
             temp = temp + P
             self.assertEqual(self.results[i], temp)
+
+
+    def test_infinity(self):
+        P = self.results[0]
+        o = Point(None, None, self.curve)
+
+        self.assertFalse(P.isInfinityPoint)
+        self.assertTrue(o.isInfinityPoint)
+        self.assertTrue(o.isOnCurve)
+        self.assertEqual(o, P - P)
+        self.assertEqual(P, P + o)
+        self.assertEqual(P, o + P)
+        self.assertEqual(o, o.inverse())
+        self.assertTrue(o.isInverseOf(o))
+        self.assertFalse(o.isInverseOf(P))
 
 
     def test_mul(self):
@@ -142,4 +157,4 @@ class TestECC_General(unittest.TestCase):
         self.P2.curve = self.curve1
 
         with self.assertRaises(TimeoutError):
-            self.P2.calcOrder(timeout=0.5)
+            self.P2.calcOrder(timeout=0.1)
