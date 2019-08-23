@@ -75,6 +75,11 @@ class Point(object):
         return self._x is None and self._y is None
 
 
+    @staticmethod
+    def infinity():
+        return Point(None, None)
+
+
     @property
     def isOnCurve(self):
         """

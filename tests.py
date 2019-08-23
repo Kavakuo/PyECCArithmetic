@@ -27,8 +27,10 @@ class TestECC_SmallCurve(unittest.TestCase):
         P = self.results[0]
         o = Point(None, None, self.curve)
 
+        # o is the infinity point, P is not
         self.assertFalse(P.isInfinityPoint)
         self.assertTrue(o.isInfinityPoint)
+        self.assertEqual(o, Point.infinity())
         self.assertTrue(o.isOnCurve)
         self.assertEqual(o, P - P)
         self.assertEqual(P, P + o)
@@ -36,6 +38,11 @@ class TestECC_SmallCurve(unittest.TestCase):
         self.assertEqual(o, o.inverse())
         self.assertTrue(o.isInverseOf(o))
         self.assertFalse(o.isInverseOf(P))
+
+        # Changing o should not affect the staticmethod Point.infinity()
+        o.x = 42
+        self.assertFalse(o.isInfinityPoint)
+        self.assertNotEqual(o, Point.infinity())
 
 
     def test_mul(self):
