@@ -30,11 +30,13 @@ class Point(object):
         self._curve = curve
         self._order = None
         self._isOnCurve = None
+        self._isInfinityPoint = None
 
 
     def _reset(self):
         self._order = None
         self._isOnCurve = None
+        self._isInfinityPoint = None
 
 
     @property
@@ -72,7 +74,16 @@ class Point(object):
 
     @property
     def isInfinityPoint(self):
-        return self._x is None and self._y is None
+        """
+        Checks if a point is the infinity point that is contained in every curve.
+        :return: True or False
+        :rtype: bool
+        """
+        if self._isInfinityPoint is not None:
+            return self._isInfinityPoint
+        else:
+            self._isInfinityPoint = (self._x is None and self._y is None)
+        return self._isInfinityPoint
 
 
     @staticmethod
