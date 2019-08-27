@@ -7,7 +7,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="PyECCArithmetic",
-    version="1.0.2",
+    version="1.1.0",
     author="Philipp Nieting",
     author_email="developer@nieting.de",
     description="Basic arithmetic operations for points on elliptic curves.",
