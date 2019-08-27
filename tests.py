@@ -45,6 +45,14 @@ class TestECC_SmallCurve(unittest.TestCase):
         self.assertNotEqual(o, Point.infinity())
 
 
+    def test_infinityCalculation(self):
+        P = self.results[0]
+        
+        self.assertEqual(P * self.pointOrder, Point.infinity())
+        self.assertEqual(P * (self.pointOrder + 1), P)
+        self.assertEqual(P * (self.pointOrder - 1), -P)
+
+
     def test_mul(self):
         P = self.results[0]
 
