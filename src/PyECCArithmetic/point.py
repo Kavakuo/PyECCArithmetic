@@ -30,11 +30,13 @@ class Point(object):
         self._curve = curve
         self._order = None
         self._isOnCurve = None
+        self._isInfinityPoint = None
 
 
     def _reset(self):
         self._order = None
         self._isOnCurve = None
+        self._isInfinityPoint = None
 
 
     @property
@@ -71,6 +73,25 @@ class Point(object):
 
 
     @property
+    def isInfinityPoint(self):
+        """
+        Checks if a point is the infinity point that is contained in every curve.
+        :return: True or False
+        :rtype: bool
+        """
+        if self._isInfinityPoint is not None:
+            return self._isInfinityPoint
+        else:
+            self._isInfinityPoint = self == Point.infinity()
+        return self._isInfinityPoint
+
+
+    @staticmethod
+    def infinity():
+        return Point(None, None)
+
+
+    @property
     def isOnCurve(self):
         """
         Checks if a point is on the selected curve by evaluating the
@@ -78,10 +99,27 @@ class Point(object):
         :return: True or False
         :rtype: bool
         """
-        if self._isOnCurve:
+        if self._isOnCurve is not None:
             return self._isOnCurve
+        elif self.isInfinityPoint:
+            self._isOnCurve = True
+        else:
+            self._isOnCurve = ((self.y ** 2) % self.curve.p) == (self.x ** 3 + self.curve.a * self.x + self.curve.b) % self.curve.p
+        return self._isOnCurve
 
-        return ((self.y ** 2) % self.curve.p) == (self.x ** 3 + self.curve.a * self.x + self.curve.b) % self.curve.p
+    
+    def isOnSameCurveAs(self, other):
+        """
+        Checks if *self* is on the same curve as *other*. The point of infinity is part of every curve.
+        :param other: Another point
+        :type other: Point
+        :return: True or False
+        :rtype: bool
+        """
+        if self.isInfinityPoint or other.isInfinityPoint:
+            return True
+        else:
+            return self.curve == other.curve
 
 
     def calcOrder(self, timeout=10):
@@ -91,20 +129,22 @@ class Point(object):
         :return: smallest number n that e = n * P mod p, with e as the neutral element of the group
         :rtype: int
         """
-        if self._order:
+        if self._order is not None:
             return self._order
+        elif self.isInfinityPoint:
+            self._order = 1
+        else:
+            order = 2
+            P = self + self
 
-        order = 2
-        P = self + self
+            maxExecTime = time.time() + timeout
+            while not P.isInverseOf(self):
+                if time.time() > maxExecTime:
+                    raise TimeoutError('Calculation of the order took too long.')
+                P = P + self
+                order += 1
 
-        maxExecTime = time.time() + timeout
-        while not P.isInverseOf(self):
-            if time.time() > maxExecTime:
-                raise TimeoutError('Calculation of the order took too long.')
-            P = P + self
-            order += 1
-
-        self._order = order + 1
+            self._order = order + 1
         return self._order
 
 
@@ -118,10 +158,12 @@ class Point(object):
         """
         if not isinstance(other, Point):
             raise ValueError('First argument has to be a Point')
-        if self.curve != other.curve:
+        elif not self.isOnSameCurveAs(other):
             raise PointsOnDifferentCurveError()
-
-        return self.x == other.x and self.y == (-other.y % self.curve.p)
+        elif self.isInfinityPoint or other.isInfinityPoint:
+            return self == other
+        else:
+            return self.x == other.x and self.y == (-other.y % self.curve.p)
 
 
     def inverse(self):
@@ -130,7 +172,10 @@ class Point(object):
         :return: The inverse point of *self*
         :rtype: Point
         """
-        return Point(self.x, (-self.y % self.curve.p), self.curve)
+        if self.isInfinityPoint:
+            return Point.infinity()
+        else:
+            return Point(self.x, (-self.y % self.curve.p), self.curve)
 
 
     def __str__(self):
@@ -147,14 +192,22 @@ class Point(object):
 
     def __add__(self, other):
         """
-        Add two points. Uses the equations listed in `Understanding Cryptography` by Christof Paar and Jan Pelzl.
+        Add two points. See https://en.wikipedia.org/wiki/Elliptic_curve_point_multiplication#Point_addition
         :param other: A second Point
         :type other: Point
         :return: new_point = self + other
         :rtype: Point
         """
-        if self.curve != other.curve:
+        if not self.isOnSameCurveAs(other):
             raise PointsOnDifferentCurveError()
+
+        if self.isInfinityPoint:
+            return other.__copy__()
+        elif other.isInfinityPoint:
+            return self.__copy__()
+
+        if self.x == other.x and self.y == -other.y % self.curve.p:
+            return Point.infinity()
 
         if self == other:
             s = ((3 * self.x ** 2 + self.curve.a) * _mul_inv(2 * self.y, self.curve.p)) % self.curve.p
