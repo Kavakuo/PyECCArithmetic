@@ -107,6 +107,20 @@ class Point(object):
             self._isOnCurve = ((self.y ** 2) % self.curve.p) == (self.x ** 3 + self.curve.a * self.x + self.curve.b) % self.curve.p
         return self._isOnCurve
 
+    
+    def isOnSameCurveAs(self, other):
+        """
+        Checks if *self* is on the same curve as *other*. The point of infinity is part of every curve.
+        :param other: Another point
+        :type other: Point
+        :return: True or False
+        :rtype: bool
+        """
+        if self.isInfinityPoint or other.isInfinityPoint:
+            return True
+        else:
+            return self.curve == other.curve
+
 
     def calcOrder(self, timeout=10):
         """
@@ -144,9 +158,9 @@ class Point(object):
         """
         if not isinstance(other, Point):
             raise ValueError('First argument has to be a Point')
-        if self.curve != other.curve:
+        elif not self.isOnSameCurveAs(other):
             raise PointsOnDifferentCurveError()
-        if self.isInfinityPoint or other.isInfinityPoint:
+        elif self.isInfinityPoint or other.isInfinityPoint:
             return self == other
         else:
             return self.x == other.x and self.y == (-other.y % self.curve.p)
@@ -184,7 +198,7 @@ class Point(object):
         :return: new_point = self + other
         :rtype: Point
         """
-        if self.curve != other.curve:
+        if not self.isOnSameCurveAs(other):
             raise PointsOnDifferentCurveError()
 
         if self.isInfinityPoint:

@@ -25,7 +25,7 @@ class TestECC_SmallCurve(unittest.TestCase):
 
     def test_infinity(self):
         P = self.results[0]
-        o = Point(None, None, self.curve)
+        o = Point.infinity()
 
         # o is the infinity point, P is not
         self.assertFalse(P.isInfinityPoint)
