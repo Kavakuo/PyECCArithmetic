@@ -82,7 +82,7 @@ class Point(object):
         if self._isInfinityPoint is not None:
             return self._isInfinityPoint
         else:
-            self._isInfinityPoint = (self._x is None and self._y is None)
+            self._isInfinityPoint = self == Point.infinity()
         return self._isInfinityPoint
 
 
@@ -159,7 +159,7 @@ class Point(object):
         :rtype: Point
         """
         if self.isInfinityPoint:
-            return Point(None, None, self.curve)
+            return Point.infinity()
         else:
             return Point(self.x, (-self.y % self.curve.p), self.curve)
 
@@ -193,7 +193,7 @@ class Point(object):
             return self.__copy__()
 
         if self.x == other.x and self.y == -other.y % self.curve.p:
-            return Point(None, None, self.curve)
+            return Point.infinity()
 
         if self == other:
             s = ((3 * self.x ** 2 + self.curve.a) * _mul_inv(2 * self.y, self.curve.p)) % self.curve.p
